@@ -52,7 +52,7 @@ switch (argv.ci) {
       errorMessage = 'flow errors have been detected';
     }
     console.error(chalk.red(`${chalk.bold(errorCount)} ${errorMessage}`));
-  } else if (result.success) {
+  } else if ((result.errors && !result.errors.length) || result.success) {
     console.log(chalk.green('Looks good! No flow errors.'));
   } else {
     console.error('Hmmm... something went wrong');
