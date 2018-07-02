@@ -11,7 +11,7 @@
     "flow": "flow",
     "build": "babel src/ -d lib/",
     "prepublish": "npm run build",
-    "precommit": "pretty-quick --staged"
+    "precommit": "pretty-quick --staged && ./bin/checktypes"
   },
   "engines": {
     "node": ">=8.0.0"
