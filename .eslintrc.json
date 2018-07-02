@@ -9,6 +9,7 @@
   ],
   "rules": {
     "node/exports-style": ["error", "module.exports"],
-    "node/shebang": "error"
+    "node/shebang": "error",
+    "no-console": "off"
   }
 }
