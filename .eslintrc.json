@@ -1,0 +1,14 @@
+{
+  "parser": "babel-eslint",
+  "plugins": ["node", "flowtype", "prettier"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:node/recommended",
+    "plugin:flowtype/recommended",
+    "plugin:prettier/recommended"
+  ],
+  "rules": {
+    "node/exports-style": ["error", "module.exports"],
+    "node/shebang": "error"
+  }
+}

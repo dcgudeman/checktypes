@@ -1,0 +1,65 @@
+#!/usr/bin/env node
+/**
+ * Copyright (c) 2018-present, David Gudeman
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+const TypeChecker = require('../lib/index.js');
+const chalk = require('chalk');
+const path = require('path');
+const argv = require('yargs')
+  .option('ci', {
+    describe: 'run in ci mode',
+    choices: ['travis'],
+  })
+  .option('path', {
+    alias: 'p',
+    describe: 'relative path to root git directory',
+    default: '.',
+  })
+  .coerce('path', path.resolve)
+  .argv;
+const env = process.env;
+let commitRange;
+switch (argv.ci) {
+  case 'travis':
+    if (env.TRAVIS_COMMIT_RANGE) {
+      commitRange = env.TRAVIS_COMMIT_RANGE;
+    } else {
+      console.error(`This doesn't seem to be a ${chalk.yellow('travis-ci')} environment`);
+      process.exit(1);
+    }
+  //TODO: add more ci environments
+}
+
+
+(async () => {
+  const checker = new TypeChecker(argv.path);
+  const files = await checker.getTargetFiles();
+  const result = await checker.flowFocusCheck(files);
+  if (result.errors && result.errors.length) {
+    const errorCount = result.errors.length;
+    result.errors.forEach((error, index) => {
+      const flowErrorMessage = error.message[0];
+      if (index === 0) {
+        console.error(chalk.red('Found Errors:'));
+        process.exitCode = 1;
+      }
+      console.error(flowErrorMessage);
+    });
+    let errorMessage = 'flow error has been detected';
+    if (errorCount > 1) {
+      errorMessage = 'flow errors have been detected';
+    }
+    console.error(chalk.red(`${chalk.bold(errorCount)} ${errorMessage}`));
+  } else if (result.success) {
+    console.log(chalk.green('Looks good! No flow errors.'));
+  } else {
+    console.error('Hmmm... something went wrong');
+    process.exitCode = 1;
+  }
+})().catch((topLevelError) => {
+  console.error(topLevelError);
+  process.exitCode = 1;
+
+});
